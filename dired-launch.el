@@ -1,13 +1,16 @@
 ;;
-;; dired tweak -> use as launcher
+;; dired-launch.el: a dired tweak -> use dired as a launcher
 ;;
-;; - launch files with 'l' key
+;; - default: launch files with 'l' key
 ;;
 ;; - see also:
 ;;     http://omniorthogonal.blogspot.com/2008/05/useful-emacs-dired-launch-hack.html
 ;;     http://www.emacswiki.org/emacs/AnythingLauncher
 ;;     ORG-OPEN-AT-POINT
-
+;;
+;; FIXMEs/wishlist:
+;;   - gracefully handle really long file names
+;;
 
 ;; using this is problematic since only one process can run at a time (issue: inability to specify distinct async output buffers for each process...)
 (defun dired-launch-builtin
@@ -20,7 +23,7 @@
    nil
    (dired-get-marked-files t current-prefix-arg)))
 
-;; workaround for DIRED-LAUNCH-BUILTIN's inability to handle more than one process at a time
+;; workaround for DIRED-DO-ASYNC-SHELL-COMMAND (see DIRED-LAUNCH-BUILTIN) inability to handle more than one process at a time (due to inability to specify distinct async buffer names?)
 (defun dired-launch-homebrew ()
   (let ((launch-cmd 	   
 	 (case system-type
@@ -46,8 +49,7 @@
        (w32-shell-execute "open" (dired-get-filename) nil 1))
     ;; forego persistent *Async Shell Command* buffer
     (save-window-excursion
-      (dired-launch-homebrew)
-      )))
+      (dired-launch-homebrew))))
 
 (setq dired-load-hook
       (lambda (&rest ignore)
