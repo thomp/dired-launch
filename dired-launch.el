@@ -3,13 +3,12 @@
 ;;
 ;; - default: launch files with 'l' key
 ;;
+
+;;
 ;; - see also:
 ;;     http://omniorthogonal.blogspot.com/2008/05/useful-emacs-dired-launch-hack.html
 ;;     http://www.emacswiki.org/emacs/AnythingLauncher
 ;;     ORG-OPEN-AT-POINT
-;;
-;; FIXMEs/wishlist:
-;;   - gracefully handle really long file names
 ;;
 
 ;; using this is problematic since only one process can run at a time (issue: inability to specify distinct async output buffers for each process...)
