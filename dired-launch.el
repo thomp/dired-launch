@@ -1,15 +1,13 @@
 ;;
 ;; dired-launch.el: a dired tweak -> use dired as a launcher
 ;;
-;; - default: launch files with 'l' key
-;;
 
 ;;
-;; - see also:
-;;     http://omniorthogonal.blogspot.com/2008/05/useful-emacs-dired-launch-hack.html
-;;     http://www.emacswiki.org/emacs/AnythingLauncher
-;;     ORG-OPEN-AT-POINT
+;; use:
+;; - launch files with 'l' key
+;; - change preferred application with 'mimeopen -a myfile'
 ;;
+
 
 ;; DL-MAILCAP-FRIEND defines program and associated argument(s)
 (defvar dl-mailcap-friend
