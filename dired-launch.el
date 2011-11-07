@@ -11,11 +11,12 @@
 ;;     ORG-OPEN-AT-POINT
 ;;
 
+;; DL-MAILCAP-FRIEND defines program and associated argument(s)
 (defvar dl-mailcap-friend
-  ;; EXO-OPEN
-  "exo-open"
+  ;; "exo-open"
   ;; GNOME-OPEN
   ;; KDE-OPEN
+  '("mimeopen" "-n")
   ;; XDG-OPEN 
   ;; - issues w/filenames with spaces (see https://bugs.archlinux.org/task/19305, https://bugs.launchpad.net/xdg-utils/+bug/220750)
   )
@@ -34,7 +35,7 @@
 (defun dired-launch-homebrew ()
   (let ((launch-cmd 	   
 	 (case system-type
-	   (gnu/linux dl-mailcap-friend)
+	   (gnu/linux (first dl-mailcap-friend))
 	   (darwin "open")))
 	(files (dired-get-marked-files t current-prefix-arg)))
     (mapc #'(lambda (file)
@@ -46,10 +47,12 @@
 		      (shell-quote-argument file))))
 		(message cmd) 
 		;; handle file names with spaces
-		(call-process dl-mailcap-friend 
-			      nil
+		(call-process launch-cmd
+			      nil	; infile
 			      0 ; async-ish...
-			      nil file)))
+			      nil 
+			      (second dl-mailcap-friend) file
+			      )))
 	  files)))
 
 (defun dired-launch-command ()
