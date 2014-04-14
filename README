@@ -1,3 +1,6 @@
+dired-launch: a launcher for emacs
+----------------------------------
+
 Put dired-launch.el in ~/.emacs.d or equivalent thereof.
 
 Launch files from dired with the 'l' key.

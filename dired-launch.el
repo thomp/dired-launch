@@ -22,12 +22,15 @@
    nil
    (dired-get-marked-files t current-prefix-arg)))
 
-(defun dired-launch-homebrew ()
+(defun dired-launch-homebrew (files)
   (let ((launch-cmd 	   
 	 (case system-type
 	   (gnu/linux (first dl-mailcap-friend))
 	   (darwin "open")))
-	(files (dired-get-marked-files t current-prefix-arg)))
+	
+	;; (files		;(dired-get-marked-files t current-prefix-arg)
+	;;  )
+	)
     (mapc #'(lambda (file)
 	      (let ((buffer-name "dired-launch-output-buffer")
 		    (cmd 
@@ -51,7 +54,9 @@
       (dired-map-over-marks
        (w32-shell-execute "open" (dired-get-filename) nil 1))
     (save-window-excursion
-      (dired-launch-homebrew))))
+      (dired-launch-homebrew
+       (dired-get-marked-files t current-prefix-arg)
+       ))))
 
 (setq dired-load-hook
       (lambda (&rest ignore)
