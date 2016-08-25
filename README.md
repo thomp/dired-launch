@@ -8,13 +8,15 @@
 
 2. Ensure emacs loads `dired-launch.el`. For example, you might add the following line to your `~/.emacs`:
 
-   (load "/path/to/dired-launch.el")
+   `(load "/path/to/dired-launch.el")`
 
 ## Use
 
-<kbd>M-x</kbd> `dired`
+1. <kbd>M-x</kbd> `dired`
 
-Move the cursor to a file of interest
+2. Move the cursor to a file of interest
+
+3. Launch:
 
 <kbd>l</kbd> launches the file using the default application
 
