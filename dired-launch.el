@@ -39,8 +39,9 @@
   "Attempt to launch appropriate executables on marked files in the current dired buffer."
   (interactive) 
   (if (eq system-type 'windows)
-      (dired-map-over-marks
-       (w32-shell-execute "open" (dired-get-filename) nil 1))
+      (dired-map-over-marks (shell-command (concat  "open ") (dired-get-filename)
+					   nil nil)
+			    nil)
     (save-window-excursion
       (dired-launch-homebrew
        (dired-get-marked-files t current-prefix-arg)))))
