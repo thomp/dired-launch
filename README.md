@@ -1,6 +1,10 @@
 # dired-launch
 
-**dired-launch** is a launcher for the emacs [dired-mode](https://www.emacswiki.org/emacs/DiredMode). In a nutshell, it lets you select one or more files and then launch an external application with that file.
+*Launch an external application from dired*
+
+---
+
+**dired-launch** is a launcher for the Emacs [dired-mode](https://www.emacswiki.org/emacs/DiredMode). In a nutshell, it lets you select a file and then launch an external application with that file.
 
 ## Getting started
 
@@ -27,3 +31,7 @@
 Change the preferred (default) application for a given file type by invoking mimeopen with the '-d' flag:
 
        mimeopen -d myfile
+
+## Related projects
+
+[Launch](https://github.com/sfllaw/emacs-launch)
