@@ -18,20 +18,10 @@
 (defvar dl-mailcap-friend
   '("mimeopen" "-n"))
 
-(defun dired-launch-builtin
-    ;; using this is problematic since only one process can run at a time (issue: inability to specify distinct async output buffers for each process...)
-    (dired-do-async-shell-command
-     (case system-type
-       (gnu/linux dl-mailcap-friend)
-       (darwin "open"))
-     nil
-     (dired-get-marked-files t current-prefix-arg)))
-
 (defun dired-launch-homebrew (files)
-  (let ((launch-cmd 	   
-	 (case system-type
-	   (gnu/linux (first dl-mailcap-friend))
-	   (darwin "open"))))
+  (let ((launch-cmd (case system-type
+		      (gnu/linux (first dl-mailcap-friend))
+		      (darwin "open"))))
     (mapc #'(lambda (file)
 	      (let ((buffer-name "dired-launch-output-buffer"))
 		(dired-launch-call-process-on launch-cmd file)))
@@ -46,6 +36,7 @@
 		(second dl-mailcap-friend) file))
 
 (defun dired-launch-command ()
+  "Attempt to launch appropriate executables on marked files in the current dired buffer."
   (interactive) 
   (if (eq system-type 'windows)
       (dired-map-over-marks
@@ -55,6 +46,7 @@
        (dired-get-marked-files t current-prefix-arg)))))
 
 (defun dired-launch-with-prompt-command ()
+  "For each marked file in the current dired buffer, prompt user to specify an executable and then call the specified executable using that file."
   (interactive) 
   (if (eq system-type 'windows) 
       (message "Windows not supported")
