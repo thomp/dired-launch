@@ -5,6 +5,7 @@
 ;; Version: 0.1
 ;; Keywords: dired, launch
 ;; URL: https://github.com/thomp/dired-launch
+;; Package-Requires: ((cl-lib "0.5"))
 
 ;;; Commentary:
 
@@ -14,13 +15,15 @@
 
 ;;; Code:
 
+(require 'cl-lib)
+
 ;; DL-MAILCAP-FRIEND defines program and associated argument(s)
 (defvar dl-mailcap-friend
   '("mimeopen" "-n"))
 
 (defun dired-launch-homebrew (files)
-  (let ((launch-cmd (case system-type
-		      (gnu/linux (first dl-mailcap-friend))
+  (let ((launch-cmd (cl-case system-type
+		      (gnu/linux (cl-first dl-mailcap-friend))
 		      (darwin "open"))))
     (mapc #'(lambda (file)
 	      (let ((buffer-name "dired-launch-output-buffer"))
@@ -33,7 +36,7 @@
 		nil	; infile
 		0 ; async-ish...
 		nil 
-		(second dl-mailcap-friend) file))
+		(cl-second dl-mailcap-friend) file))
 
 (defun dired-launch-command ()
   "Attempt to launch appropriate executables on marked files in the current dired buffer."
