@@ -22,9 +22,9 @@
 
 3. Launch:
 
-<kbd>l</kbd> launches the file using the default application
+<kbd>C-c l</kbd> launches the file using the default application
 
-<kbd>L</kbd> prompts for the launch application and then launches the file
+<kbd>C-c L</kbd> prompts for the launch application and then launches the file
 
 ## Miscellany
 
