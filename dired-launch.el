@@ -15,12 +15,12 @@
 ;;; Code:
 
 ;; DL-MAILCAP-FRIEND defines program and associated argument(s)
-(defvar dl-mailcap-friend
+(defvar dired-launch-mailcap-friend
   '("mimeopen" "-n"))
 
 (defun dired-launch-homebrew (files)
   (let ((launch-cmd (case system-type
-		      (gnu/linux (first dl-mailcap-friend))
+		      (gnu/linux (first dired-launch-mailcap-friend))
 		      (darwin "open"))))
     (mapc #'(lambda (file)
 	      (let ((buffer-name "dired-launch-output-buffer"))
@@ -33,8 +33,9 @@
 		nil	; infile
 		0 ; async-ish...
 		nil 
-		(second dl-mailcap-friend) file))
+		(second dired-launch-mailcap-friend) file))
 
+;;;###autoload
 (defun dired-launch-command ()
   "Attempt to launch appropriate executables on marked files in the current dired buffer."
   (interactive) 
@@ -46,6 +47,7 @@
       (dired-launch-homebrew
        (dired-get-marked-files t current-prefix-arg)))))
 
+;;;###autoload
 (defun dired-launch-with-prompt-command ()
   "For each marked file in the current dired buffer, prompt user to specify an executable and then call the specified executable using that file."
   (interactive) 
@@ -57,15 +59,15 @@
 		  (dired-launch-call-process-on launch-cmd file))) 
 	    (dired-get-marked-files t current-prefix-arg)))))
 
-(setq dired-load-hook
-      (lambda (&rest ignore)
-	(define-key dired-mode-map "l" 'dired-launch-command)
-	(define-key dired-mode-map "L" 'dired-launch-with-prompt-command)))
+(defun dired-launch-default-key-bindings ()
+  (define-key dired-mode-map (kbd "C-c l") 'dired-launch-command)
+  (define-key dired-mode-map (kbd "C-c L") 'dired-launch-with-prompt-command))
+
+(add-hook 'dired-load-hook (lambda (&rest ignore) (dired-launch-default-key-bindings)))
 
 ;; anticipate possibility that dired-load-hook (as defined above) was not invoked (e.g., dired loaded already)
 (when (boundp 'dired-mode-map)
-  (define-key dired-mode-map "l" 'dired-launch-command)
-  (define-key dired-mode-map "L" 'dired-launch-with-prompt-command))
+  (dired-launch-default-key-bindings))
 
 (provide 'dired-launch)
 ;;; dired-launch.el ends here
