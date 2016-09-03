@@ -36,19 +36,20 @@
 (defun dired-launch-command ()
   "Attempt to launch appropriate executables on marked files in the current dired buffer."
   (interactive) 
-  (case system-type
-    (darwin (save-window-excursion
-	      (dired-launch-homebrew
-	       (dired-get-marked-files t current-prefix-arg)
-	       "open")))
-    (gnu/linux (save-window-excursion
-		 (dired-launch-homebrew
-		  (dired-get-marked-files t current-prefix-arg)
-		  (first dired-launch-mailcap-friend))))
-    (windows-nt (dired-map-over-marks
-		 (w32-shell-execute "open" (dired-get-filename) nil 1) 
-		 nil))
-    (t (error "%s is not supported" system-type))))
+  (cond ((eq system-type 'darwin)
+	 (save-window-excursion
+	   (dired-launch-homebrew
+	    (dired-get-marked-files t current-prefix-arg)
+	    "open")))
+	((eq system-type 'gnu/linux)
+	 (save-window-excursion
+	   (dired-launch-homebrew
+	    (dired-get-marked-files t current-prefix-arg)
+	    (first dired-launch-mailcap-friend))))
+	((eq system-type 'windows-nt) (dired-map-over-marks
+				       (w32-shell-execute "open" (dired-get-filename) nil 1) 
+				       nil))
+	(t (error "%s is not supported" system-type))))
 
 ;;;###autoload
 (defun dired-launch-with-prompt-command ()
