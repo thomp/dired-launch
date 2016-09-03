@@ -18,14 +18,11 @@
 (defvar dired-launch-mailcap-friend
   '("mimeopen" "-n"))
 
-(defun dired-launch-homebrew (files)
-  (let ((launch-cmd (case system-type
-		      (gnu/linux (first dired-launch-mailcap-friend))
-		      (darwin "open"))))
-    (mapc #'(lambda (file)
-	      (let ((buffer-name "dired-launch-output-buffer"))
-		(dired-launch-call-process-on launch-cmd file)))
-	  files)))
+(defun dired-launch-homebrew (files launch-cmd)
+  (mapc #'(lambda (file)
+	    (let ((buffer-name "dired-launch-output-buffer"))
+	      (dired-launch-call-process-on launch-cmd file)))
+	files))
 
 (defun dired-launch-call-process-on (launch-cmd file)
   ;; handle file names with spaces
@@ -39,13 +36,19 @@
 (defun dired-launch-command ()
   "Attempt to launch appropriate executables on marked files in the current dired buffer."
   (interactive) 
-  (if (eq system-type 'windows)
-      (dired-map-over-marks (shell-command (concat  "open " (dired-get-filename))
-					   nil nil)
-			    nil)
-    (save-window-excursion
-      (dired-launch-homebrew
-       (dired-get-marked-files t current-prefix-arg)))))
+  (case system-type
+    (darwin (save-window-excursion
+	      (dired-launch-homebrew
+	       (dired-get-marked-files t current-prefix-arg)
+	       "open")))
+    (gnu/linux (save-window-excursion
+		 (dired-launch-homebrew
+		  (dired-get-marked-files t current-prefix-arg)
+		  (first dired-launch-mailcap-friend))))
+    (windows-nt (dired-map-over-marks
+		 (w32-shell-execute "open" (dired-get-filename) nil 1) 
+		 nil))
+    (t (error "%s is not supported" system-type))))
 
 ;;;###autoload
 (defun dired-launch-with-prompt-command ()
@@ -60,8 +63,8 @@
 	    (dired-get-marked-files t current-prefix-arg)))))
 
 (defun dired-launch-default-key-bindings ()
-  (define-key dired-mode-map (kbd "C-c l") 'dired-launch-command)
-  (define-key dired-mode-map (kbd "C-c L") 'dired-launch-with-prompt-command))
+  (define-key dired-mode-map (kbd "J") 'dired-launch-command)
+  (define-key dired-mode-map (kbd "K") 'dired-launch-with-prompt-command))
 
 (add-hook 'dired-load-hook (lambda (&rest ignore) (dired-launch-default-key-bindings)))
 
