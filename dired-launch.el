@@ -12,6 +12,10 @@
 ;; In a nutshell, it lets you select a file and then launch an
 ;; external application with that file.
 
+;; To enable, add `dired-launch-mode' to `dired-mode-hook'.  For
+;; convenience, the command `dired-launch-enable' will do this for
+;; you.
+
 ;;; Code:
 
 ;; DL-MAILCAP-FRIEND defines program and associated argument(s)
@@ -63,15 +67,22 @@
 		  (dired-launch-call-process-on launch-cmd file))) 
 	    (dired-get-marked-files t current-prefix-arg)))))
 
-(defun dired-launch-default-key-bindings ()
-  (define-key dired-mode-map (kbd "J") 'dired-launch-command)
-  (define-key dired-mode-map (kbd "K") 'dired-launch-with-prompt-command))
+(defvar dired-launch-mode-map (make-sparse-keymap)
+  "Keymap for `dired-launch-mode'.")
 
-(add-hook 'dired-load-hook (lambda (&rest ignore) (dired-launch-default-key-bindings)))
+(define-key dired-launch-mode-map (kbd "J") 'dired-launch-command)
+(define-key dired-launch-mode-map (kbd "K") 'dired-launch-with-prompt-command)
 
-;; anticipate possibility that dired-load-hook (as defined above) was not invoked (e.g., dired loaded already)
-(when (boundp 'dired-mode-map)
-  (dired-launch-default-key-bindings))
+;;;###autoload
+(define-minor-mode dired-launch-mode
+  "Add commands to launch executables."
+  :lighter " Launch")
+
+;;;###autoload
+(defun dired-launch-enable ()
+  "Ensure that `dired-launch-mode' will be enabled in `dired-mode'."
+  (interactive)
+  (add-hook 'dired-mode-hook 'dired-launch-mode))
 
 (provide 'dired-launch)
 ;;; dired-launch.el ends here
