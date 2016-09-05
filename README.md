@@ -13,8 +13,10 @@
 2. Ensure emacs loads `dired-launch.el`. For example, you might add the following line to your `~/.emacs`:
 
    `(load "/path/to/dired-launch.el")`
+   
+3. Use <kbd>M-x dired-launch-enable</kbd> (or add `dired-launch-mode` to `dired-mode-hook`)
 
-## Use
+## Usage
 
 1. <kbd>M-x</kbd> `dired`
 
@@ -22,9 +24,9 @@
 
 3. Launch:
 
-<kbd>C-c l</kbd> launches the file using the default application
+<kbd>J</kbd> launches the file using the default application
 
-<kbd>C-c L</kbd> prompts for the launch application and then launches the file
+<kbd>K</kbd> prompts for the launch application and then launches the file
 
 ## Miscellany
 
