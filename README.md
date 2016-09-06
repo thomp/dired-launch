@@ -12,7 +12,17 @@
 
 2. Ensure emacs loads `dired-launch.el`. For example, you might add the following line to your `~/.emacs`:
 
-   `(load "/path/to/dired-launch.el")`
+    `(load "/path/to/dired-launch.el")`
+
+3. Enable the dired minor mode:
+
+    `(dired-launch-enable)`
+
+4. If you prefer different key bindings, consider modifying them:
+
+    ```
+    (define-key dired-launch-mode-map (kbd "l") 'dired-launch-command)`
+    ```
 
 ## Use
 
@@ -22,9 +32,8 @@
 
 3. Launch:
 
-<kbd>C-c l</kbd> launches the file using the default application
+    <kbd>J</kbd> launches the file using the default application using `dired-launch-command`
 
-<kbd>C-c L</kbd> prompts for the launch application and then launches the file
 
 ## Miscellany
 
