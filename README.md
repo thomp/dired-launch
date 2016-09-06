@@ -20,9 +20,7 @@
 
 4. If you prefer different key bindings, consider modifying them:
 
-    ```
-    (define-key dired-launch-mode-map (kbd "l") 'dired-launch-command)`
-    ```
+    `(define-key dired-launch-mode-map (kbd "l") 'dired-launch-command)`
 
 ## Use
 
