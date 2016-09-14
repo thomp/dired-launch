@@ -1,3 +1,5 @@
+[![MELPA](https://melpa.org/packages/dired-launch-badge.svg)](https://melpa.org/#/dired-launch)
+
 # dired-launch
 
 *Launch an external application from dired*
