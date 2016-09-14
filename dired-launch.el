@@ -63,7 +63,7 @@
       (message "Windows not supported")
     (save-window-excursion
       (mapc #'(lambda (file)
-		(let ((launch-cmd (read-from-minibuffer (concat "Launch " file " with?" ))))
+		(let ((launch-cmd (read-from-minibuffer (concat "Launch " file " with? " ))))
 		  (dired-launch-call-process-on launch-cmd file))) 
 	    (dired-get-marked-files t current-prefix-arg)))))
 
