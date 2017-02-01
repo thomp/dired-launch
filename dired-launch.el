@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2016 David Thompson
 ;; Author: David Thompson
-;; Version: 0.1
+;; Version: 0.2
 ;; Keywords: dired, launch
 ;; URL: https://github.com/thomp/dired-launch
 
@@ -62,10 +62,51 @@
   (if (eq system-type 'windows) 
       (message "Windows not supported")
     (save-window-excursion
-      (mapc #'(lambda (file)
-		(let ((launch-cmd (read-from-minibuffer (concat "Launch " file " with? " ))))
-		  (dired-launch-call-process-on launch-cmd file))) 
+      (mapc #'(lambda (marked-file)
+		(let ((launch-cmd (dired-launch-get-exec--completions)))
+		  (dired-launch-call-process-on launch-cmd marked-file))) 
 	    (dired-get-marked-files t current-prefix-arg)))))
+
+(defun dired-launch-get-exec--simple ()
+  (read-from-minibuffer (concat "Launch " file " with? ")))
+
+(defun dired-launch-get-exec--completions ()
+  (minibuffer-with-setup-hook 'minibuffer-complete 
+    (completing-read (concat "Executable to use: ")
+		     (mapcar #'(lambda (executable-string)
+				 (cons executable-string executable-string))
+			     (dired-launch--executables-list)))))
+
+;; purloined from lisp/shell.el's 'shell--command-completion-data'
+(defun dired-launch--executables-list ()
+  (let ((path-dirs (append (cdr (reverse exec-path))
+			   (if (memq system-type '(windows-nt ms-dos)) '("."))))
+	(cwd (file-name-as-directory (expand-file-name default-directory)))
+	(ignored-extensions
+	 (and comint-completion-fignore
+	      (mapconcat (function (lambda (x) (concat (regexp-quote x) "\\'")))
+			 comint-completion-fignore "\\|")))
+	(completions ()))
+    ;; Go thru each dir in the search path, finding completions.
+    (while path-dirs
+      (setq dir (file-name-as-directory (comint-directory (or (car path-dirs) ".")))
+	    comps-in-dir (and (file-accessible-directory-p dir)
+			      (file-name-all-completions "" dir)))
+      ;; Go thru each completion found, to see whether it should be used.
+      (while comps-in-dir
+	(setq file (car comps-in-dir)
+	      abs-file-name (concat dir file))
+	(if (and (not (member file completions))
+		 (not (and ignored-extensions
+			   (string-match ignored-extensions file)))
+		 (or (string-equal dir cwd)
+		     (not (file-directory-p abs-file-name)))
+		 (or nil ;(null shell-completion-execonly)
+		     (file-executable-p abs-file-name)))
+	    (setq completions (cons file completions)))
+	(setq comps-in-dir (cdr comps-in-dir)))
+      (setq path-dirs (cdr path-dirs)))
+    completions))
 
 (defvar dired-launch-mode-map (make-sparse-keymap)
   "Keymap for `dired-launch-mode'.")
