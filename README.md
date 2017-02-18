@@ -12,17 +12,14 @@
 
 1. Download `dired-launch.el`.
 
-2. Ensure emacs loads `dired-launch.el`. For example, you might add the following line to your `~/.emacs`:
+2. Load `dired-launch.el`. For example, you might add the following line to `~/.emacs`:
 
     `(load "/path/to/dired-launch.el")`
 
-3. Enable the dired minor mode:
+3. Ensure `dired-launch` is enabled in `dired-mode`:
 
     `(dired-launch-enable)`
 
-4. If you prefer different key bindings, consider modifying them:
-
-    `(define-key dired-launch-mode-map (kbd "l") 'dired-launch-command)`
 
 ## Use
 
@@ -30,12 +27,23 @@
 
 2. Move the cursor to a file of interest
 
-3. Launch:
+3. Launch 
 
-    <kbd>J</kbd> launches the file using the default application using `dired-launch-command`
+    <kbd>J</kbd> (`dired-launch-command`) launches the file using the preferred application 
+
+	<kbd>K</kbd> (`dired-launch-with-prompt-command`) prompts for the application and then launches the file
+	
+
+## Modifying the default keybindings
+
+If you prefer different key bindings, consider modifying the defaults.
+
+    `(define-key dired-launch-mode-map (kbd "l") 'dired-launch-command)`
 
 
-## Miscellany
+## Changing the preferred application
+
+### Linux
 
 Change the preferred (default) application for a given file type by invoking mimeopen with the '-d' flag:
 
