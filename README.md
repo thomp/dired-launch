@@ -10,6 +10,10 @@
 
 ## Getting started
 
+If MELPA is [enabled](https://melpa.org/#/getting-started) as an Emacs package repository, it should be possible to install simply using <kbd>M-x</kbd> `list-packages` and selecting the `dired-launch` package for installation (<kbd>i</kbd> <kbd>x</kbd>).
+
+### Getting started without the Emacs package manager
+
 1. Download `dired-launch.el`.
 
 2. Load `dired-launch.el`. For example, you might add the following line to `~/.emacs`:
