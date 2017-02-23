@@ -1,6 +1,6 @@
 ;;; dired-launch.el --- Use dired as a launcher
 
-;; Copyright (C) 2016 David Thompson
+;; Copyright (C) 2016,2017 David Thompson
 ;; Author: David Thompson
 ;; Version: 0.2
 ;; Keywords: dired, launch
@@ -22,19 +22,41 @@
 (defvar dired-launch-mailcap-friend
   '("mimeopen" "-n"))
 
+(defvar dired-launch-extensions-map
+  '(("odt" ("libreofficedev5.3" "abiword"))
+    ("JPG" ("phototonic" "gimp"))
+    ("png" ("phototonic")))
+  "Defines preferred executable(s) for specified file extensions.")
+
+(defvar dired-launch-completions-f
+  #'(lambda (file)
+      (or (dired-launch--executables-list-using-user-extensions-map file)
+	  (dired-launch--executables-list file) ; use shell.el's 'shell--command-completion-data'
+	  ))
+  "A function which is responsible for returning a set of completions (presumably corresponding to executables). The function should accept a single argument, a string corresponding to the file under consideration.")
+
 (defun dired-launch-homebrew (files launch-cmd)
   (mapc #'(lambda (file)
-	    (let ((buffer-name "dired-launch-output-buffer"))
-	      (dired-launch-call-process-on launch-cmd file)))
+	    (let ((buffer-name "dired-launch-output-buffer")
+		  (preferred-executable (let ((completions (dired-launch--executables-list-using-user-extensions-map file)))
+					  (if (and completions (= 1 (length completions)))
+					      (first completions)))))
+	      (if preferred-executable
+		  (dired-launch-call-process-on preferred-executable file)
+		(dired-launch-call-process-on launch-cmd 
+					      (second dired-launch-mailcap-friend)
+					      file))))
 	files))
 
-(defun dired-launch-call-process-on (launch-cmd file)
+(defun dired-launch-call-process-on (launch-cmd &rest args)
   ;; handle file names with spaces
-  (call-process launch-cmd
-		nil	; infile
-		0 ; async-ish...
-		nil 
-		(second dired-launch-mailcap-friend) file))
+  (apply #'call-process
+	 (append (list launch-cmd
+		       nil		; infile
+		       0		; async-ish...
+		       nil		; display
+		       )
+	  args)))
 
 ;;;###autoload
 (defun dired-launch-command ()
@@ -63,22 +85,22 @@
       (message "Windows not supported")
     (save-window-excursion
       (mapc #'(lambda (marked-file)
-		(let ((launch-cmd (dired-launch-get-exec--completions)))
+		(let ((launch-cmd (dired-launch-get-exec--completions marked-file)))
 		  (dired-launch-call-process-on launch-cmd marked-file))) 
 	    (dired-get-marked-files t current-prefix-arg)))))
 
 (defun dired-launch-get-exec--simple ()
   (read-from-minibuffer (concat "Launch " file " with? ")))
 
-(defun dired-launch-get-exec--completions ()
+(defun dired-launch-get-exec--completions (file)
   (minibuffer-with-setup-hook 'minibuffer-complete 
     (completing-read (concat "Executable to use: ")
 		     (mapcar #'(lambda (executable-string)
 				 (cons executable-string executable-string))
-			     (dired-launch--executables-list)))))
+			     (funcall dired-launch-completions-f file)))))
 
 ;; purloined from lisp/shell.el's 'shell--command-completion-data'
-(defun dired-launch--executables-list ()
+(defun dired-launch--executables-list (&optional file)
   (let ((path-dirs (append (cdr (reverse exec-path))
 			   (if (memq system-type '(windows-nt ms-dos)) '("."))))
 	(cwd (file-name-as-directory (expand-file-name default-directory)))
@@ -108,6 +130,14 @@
       (setq path-dirs (cdr path-dirs)))
     completions))
 
+(defun dired-launch--executables-list-using-mailcap (file)
+  (mailcap-file-default-commands (list file)))
+
+(defun dired-launch--executables-list-using-user-extensions-map (file)
+  (let* ((extension (file-name-extension file nil))
+	 (match (assoc extension dired-launch-extensions-map)))
+    (cadr match)))
+ 
 (defvar dired-launch-mode-map (make-sparse-keymap)
   "Keymap for `dired-launch-mode'.")
 
