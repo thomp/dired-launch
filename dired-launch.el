@@ -25,9 +25,11 @@
 (defun dired-launch-homebrew (files launch-cmd)
   (mapc #'(lambda (file)
 	    (let ((buffer-name "dired-launch-output-buffer"))
-	      (dired-launch-call-process-on launch-cmd
-					    (second dired-launch-mailcap-friend)
-					    file)))
+	      (let ((args (append (rest dired-launch-default-launcher)
+				  (list file))))
+		(apply #'dired-launch-call-process-on
+		       launch-cmd
+		       args))))
 	files))
 
 (defun dired-launch-call-process-on (launch-cmd &rest args)
