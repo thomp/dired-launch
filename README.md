@@ -24,6 +24,12 @@ If MELPA is [enabled](https://melpa.org/#/getting-started) as an Emacs package r
 
     `(dired-launch-enable)`
 
+### Ensure dired-launch is configured as desired
+
+Ensure the default launcher specified by `dired-launch-default-launcher` is the desired program. For example, one might specify `xdg-open` as the default launcher:
+
+    ;; use xdg-open as the default launcher
+	(setq dired-launch-default-launcher '("xdg-open"))
 
 ## Use
 

@@ -18,9 +18,9 @@
 
 ;;; Code:
 
-;; DL-MAILCAP-FRIEND defines program and associated argument(s)
-(defvar dired-launch-mailcap-friend
-  '("mimeopen" "-n"))
+(defvar dired-launch-default-launcher
+  '("mimeopen" "-n")
+  "Define the program used as the default launcher. The second member of the list defines a command-line flag which will be used when invoking the program.")
 
 (defun dired-launch-homebrew (files launch-cmd)
   (mapc #'(lambda (file)
@@ -34,7 +34,7 @@
 		nil	; infile
 		0 ; async-ish...
 		nil 
-		(second dired-launch-mailcap-friend) file))
+		(second dired-launch-default-launcher) file))
 
 ;;;###autoload
 (defun dired-launch-command ()
@@ -49,7 +49,7 @@
 	 (save-window-excursion
 	   (dired-launch-homebrew
 	    (dired-get-marked-files t current-prefix-arg)
-	    (first dired-launch-mailcap-friend))))
+	    (first dired-launch-default-launcher))))
 	((eq system-type 'windows-nt) (dired-map-over-marks
 				       (w32-shell-execute "open" (dired-get-filename) nil 1) 
 				       nil))
