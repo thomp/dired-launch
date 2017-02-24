@@ -29,12 +29,14 @@
 	files))
 
 (defun dired-launch-call-process-on (launch-cmd file)
-  ;; handle file names with spaces
-  (call-process launch-cmd
-		nil	; infile
-		0 ; async-ish...
-		nil 
-		(second dired-launch-default-launcher) file))
+  (if (executable-find launch-cmd)
+      ;; handle file names with spaces
+      (call-process launch-cmd
+		    nil	; infile
+		    0 ; async-ish...
+		    nil
+		    (second dired-launch-default-launcher) file)
+    (message "Could not find %s. Is %s installed? Check the value of dired-launch-default-launcher." launch-cmd launch-cmd)))
 
 ;;;###autoload
 (defun dired-launch-command ()
