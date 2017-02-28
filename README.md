@@ -46,10 +46,12 @@ Ensure the default launcher specified by `dired-launch-default-launcher` is the 
 
 ## Modifying the default keybindings
 
-If you prefer different key bindings, consider modifying the defaults.
+If you prefer different key bindings, consider modifying the default keybinding(s).
 
-    `(define-key dired-launch-mode-map (kbd "l") 'dired-launch-command)`
-
+```
+;; bind the 'l' key to dired-launch-command
+(define-key dired-launch-mode-map (kbd "l") 'dired-launch-command)
+```
 
 ## Changing the preferred application
 
