@@ -98,7 +98,7 @@
       (mapc #'(lambda (marked-file)
 		(let ((launch-cmd-spec (dired-launch-get-exec--completions marked-file)))
 		  (if (stringp launch-cmd-spec)
-		      (dired-launch-call-process-on launch-cmd marked-file)
+		      (dired-launch-call-process-on launch-cmd-spec marked-file)
 		    (funcall launch-cmd-spec marked-file))))
 	    (dired-get-marked-files t current-prefix-arg)))))
 
