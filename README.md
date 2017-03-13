@@ -53,7 +53,21 @@ If you prefer different key bindings, consider modifying the default keybinding(
 (define-key dired-launch-mode-map (kbd "l") 'dired-launch-command)
 ```
 
-## Changing the preferred application
+## Specifying preferred applications
+
+### Using dired-launch-extensions-map
+
+One can use `dired-launch-extensions-map` to specify, for a given file extension, one or more preferred applications.
+
+```
+(setf dired-launch-extensions-map
+      '(;; specify LibreOffice as the preferred application for
+        ;; a Microsoft Excel file with the xslx extension
+        ("xlsx" ("libreofficedev5.3"))
+        ;; specify LibreOffice and Abiword as preferred applications for
+        ;; an OpenDocument text file with the odt extension
+        ("odt" ("libreofficedev5.3" "abiword"))))
+```
 
 ### Linux
 
