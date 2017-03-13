@@ -23,16 +23,23 @@
   "Define the program used as the default launcher. The second member of the list defines a command-line flag which will be used when invoking the program.")
 
 (defvar dired-launch-extensions-map
-  '(("odt" ("libreofficedev5.3" "abiword"))
-    ("JPG" ("phototonic" "gimp"))
-    ("png" ("phototonic")))
-  "Defines preferred executable(s) for specified file extensions. Extensions are matched in a case-sensitive manner.")
+  (list '("odt" ("libreofficedev5.3" "abiword"))
+	'("JPG" ("phototonic" "gimp"))
+	'("png" ("phototonic"))
+	(list "html"
+	      (list (list "special html launcher"
+			  (list #'(lambda (file)
+				    (message "encountered an HTML file: %s" file)
+				    ;; arbitrary command invocation
+				    (dired-launch-call-process-on "bluefish" "-n" file))))
+		    (list "travel back in time" "xedit"))))
+  "Defines preferred executable(s) for specified file extensions via an alist. Extensions are matched in a case-sensitive manner. The second member of each alist member is a list where each member is either a string corresponding to an executable or a list where the first member is a descriptive string and the second member is either a string or a funcallable object which accepts a single argument, a string corresponding to the file, and returns a string (which, presumably, represents an executable or something to invoke).")
 
 (defvar dired-launch-completions-f
   #'(lambda (file)
       (or (dired-launch--executables-list-using-user-extensions-map file)
 	  (dired-launch--executables-list file)))
-  "This function should return a set of completions (presumably corresponding to executables). The function should accept a single argument, a string corresponding to the file under consideration.")
+  "This function should return a set of completions (presumably corresponding to executables) either as a list of strings or as an alist. The function should accept a single argument, a string corresponding to the file under consideration.")
 
 
 (defun dired-launch-homebrew (files launch-cmd)
@@ -89,19 +96,30 @@
       (message "Windows not supported")
     (save-window-excursion
       (mapc #'(lambda (marked-file)
-		(let ((launch-cmd (dired-launch-get-exec--completions marked-file)))
-		  (dired-launch-call-process-on launch-cmd marked-file))) 
+		(let ((launch-cmd-spec (dired-launch-get-exec--completions marked-file)))
+		  (if (stringp launch-cmd-spec)
+		      (dired-launch-call-process-on launch-cmd marked-file)
+		    (funcall launch-cmd-spec marked-file))))
 	    (dired-get-marked-files t current-prefix-arg)))))
 
 (defun dired-launch-get-exec--simple ()
   (read-from-minibuffer (concat "Launch " file " with? ")))
 
 (defun dired-launch-get-exec--completions (file)
-  (minibuffer-with-setup-hook 'minibuffer-complete 
-    (completing-read (concat "Executable to use: ")
-		     (mapcar #'(lambda (executable-string)
-				 (cons executable-string executable-string))
-			     (funcall dired-launch-completions-f file)))))
+  "Prompt user to select a completion. Return the corresponding value (either the completion value itself or, if completions are specified as an alist, the value corresponding to the alist key."
+  (let ((completions (funcall dired-launch-completions-f file)))
+    (let ((selection (minibuffer-with-setup-hook 'minibuffer-complete
+		       (completing-read (concat "Executable to use: ")
+					completions))))
+      ;; COMPLETIONS is either a list of strings or an alist
+      (cond ((stringp (first completions))
+	     selection)
+	    ((consp (first completions))
+	     (let ((executable-constructor (caadr (assoc selection completions))))
+	       (message "executable-constructor %s" executable-constructor)
+	       executable-constructor))
+	    (t
+	     (error "%s" "Can't handle COMPLETIONS"))))))
 
 ;; purloined from lisp/shell.el's 'shell--command-completion-data'
 (defun dired-launch--executables-list (&optional file)
