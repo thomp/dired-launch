@@ -75,20 +75,20 @@ This entry specifies, for files with the 'html' extension, calling the 'bluefish
 
 ```
 (list "html"
-	      (list (list "special html launcher"
-			  (list #'(lambda (file)
-				    (message "encountered an HTML file: %s" file)
-				    ;; invoke arbitrary command
-				    (dired-launch-call-process-on "bluefish" "-n" file))))))
+      (list (list "special html launcher"
+		  (list #'(lambda (file)
+			    (message "encountered an HTML file: %s" file)
+			    ;; invoke arbitrary command
+			    (dired-launch-call-process-on "bluefish" "-n" file))))))
 ```
 
 This entry specifies, for files with the 'txt' extension, Emacs should directly open the application (i.e., the user prefers not to launch an external application on plain-text files).
 
 ```
 (list "txt"
-	      (list (list "emacs"
-			  (list #'(lambda (file)
-				    (find-file file))))))
+      (list (list "emacs"
+		  (list #'(lambda (file)
+			    (find-file file))))))
 ```
 
 ### Linux
