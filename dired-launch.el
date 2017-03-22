@@ -49,16 +49,21 @@
 (defun dired-launch-homebrew (files launch-cmd)
   (mapc #'(lambda (file)
 	    (let ((buffer-name "dired-launch-output-buffer")
-		  (preferred-executable (let ((completions (dired-launch--executables-list-using-user-extensions-map file)))
-					  (if (and completions (= 1 (length completions)))
-					      (first completions)))))
-	      (if preferred-executable
-		  (dired-launch-call-process-on preferred-executable file)
-		(let ((args (append (rest dired-launch-default-launcher)
-				    (list file))))
-		  (apply #'dired-launch-call-process-on
-			 (or preferred-executable launch-cmd)
-			 args)))))
+		  (preferred-launch-cmd-spec
+		   (let ((completions (dired-launch--executables-list-using-user-extensions-map file)))
+		     (first completions))))
+	      (cond ((stringp preferred-launch-cmd-spec)
+		      (save-window-excursion
+			(dired-launch-call-process-on preferred-launch-cmd-spec file)))
+		    (preferred-launch-cmd-spec
+		     (funcall (caadr preferred-launch-cmd-spec) file))
+		    (t
+		     (save-window-excursion
+		       (let ((args (append (rest dired-launch-default-launcher)
+					   (list file))))
+			 (apply #'dired-launch-call-process-on
+				launch-cmd
+				args)))))))
 	files))
 
 (defun dired-launch-call-process-on (launch-cmd &rest args)
@@ -78,15 +83,13 @@
   "Attempt to launch appropriate executables on marked files in the current dired buffer."
   (interactive) 
   (cond ((eq system-type 'darwin)
-	 (save-window-excursion
-	   (dired-launch-homebrew
-	    (dired-get-marked-files t current-prefix-arg)
-	    "open")))
+	 (dired-launch-homebrew
+	  (dired-get-marked-files t current-prefix-arg)
+	  "open"))
 	((eq system-type 'gnu/linux)
-	 (save-window-excursion
-	   (dired-launch-homebrew
-	    (dired-get-marked-files t current-prefix-arg)
-	    (first dired-launch-default-launcher))))
+	 (dired-launch-homebrew
+	  (dired-get-marked-files t current-prefix-arg)
+	  (first dired-launch-default-launcher)))
 	((eq system-type 'windows-nt) (dired-map-over-marks
 				       (w32-shell-execute "open" (dired-get-filename) nil 1) 
 				       nil))
