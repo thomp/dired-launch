@@ -57,7 +57,7 @@ If you prefer different key bindings, consider modifying the default keybinding(
 
 ### Using dired-launch-extensions-map
 
-One can use `dired-launch-extensions-map` to specify, for a given file extension, one or more preferred applications.
+One can use `dired-launch-extensions-map` to specify, for a given file extension, one or more preferred applications by simply specifying the application as a string.
 
 ```
 (setf dired-launch-extensions-map
@@ -67,6 +67,28 @@ One can use `dired-launch-extensions-map` to specify, for a given file extension
         ;; specify LibreOffice and Abiword as preferred applications for
         ;; an OpenDocument text file with the odt extension
         ("odt" ("libreofficedev5.3" "abiword"))))
+```
+
+One can also use `dired-launch-extensions-map` to specify, for a given file extension, an arbitrary function to invoke.
+
+This entry specifies, for files with the 'html' extension, calling the 'bluefish' executable with the '-n' option.
+
+```
+(list "html"
+	      (list (list "special html launcher"
+			  (list #'(lambda (file)
+				    (message "encountered an HTML file: %s" file)
+				    ;; invoke arbitrary command
+				    (dired-launch-call-process-on "bluefish" "-n" file))))))
+```
+
+This entry specifies, for files with the 'txt' extension, Emacs should directly open the application (i.e., the user prefers not to launch an external application on plain-text files).
+
+```
+(list "txt"
+	      (list (list "emacs"
+			  (list #'(lambda (file)
+				    (find-file file))))))
 ```
 
 ### Linux
