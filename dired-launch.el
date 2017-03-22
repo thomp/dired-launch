@@ -30,9 +30,13 @@
 	      (list (list "special html launcher"
 			  (list #'(lambda (file)
 				    (message "encountered an HTML file: %s" file)
-				    ;; arbitrary command invocation
+				    ;; invoke arbitrary command
 				    (dired-launch-call-process-on "bluefish" "-n" file))))
-		    (list "travel back in time" "xedit"))))
+		    (list "travel back in time" "xedit")))
+	(list "txt"
+	      (list (list "emacs"
+			  (list #'(lambda (file)
+				    (find-file file)))))))
   "Defines preferred executable(s) for specified file extensions via an alist. Extensions are matched in a case-sensitive manner. The second member of each alist member is a list where each member is either a string corresponding to an executable or a list where the first member is a descriptive string and the second member is either a string or a funcallable object which accepts a single argument, a string corresponding to the file, and returns a string (which, presumably, represents an executable or something to invoke).")
 
 (defvar dired-launch-completions-f
@@ -94,13 +98,13 @@
   (interactive) 
   (if (eq system-type 'windows) 
       (message "Windows not supported")
-    (save-window-excursion
-      (mapc #'(lambda (marked-file)
-		(let ((launch-cmd-spec (dired-launch-get-exec--completions marked-file)))
-		  (if (stringp launch-cmd-spec)
-		      (dired-launch-call-process-on launch-cmd-spec marked-file)
-		    (funcall launch-cmd-spec marked-file))))
-	    (dired-get-marked-files t current-prefix-arg)))))
+    (mapc #'(lambda (marked-file)
+	      (let ((launch-cmd-spec (dired-launch-get-exec--completions marked-file)))
+		(if (stringp launch-cmd-spec)
+		    (save-window-excursion
+		      (dired-launch-call-process-on launch-cmd-spec marked-file))
+		  (funcall launch-cmd-spec marked-file))))
+	  (dired-get-marked-files t current-prefix-arg))))
 
 (defun dired-launch-get-exec--simple ()
   (read-from-minibuffer (concat "Launch " file " with? ")))
