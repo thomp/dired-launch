@@ -76,10 +76,10 @@ This entry specifies, for files with the 'html' extension, calling the 'bluefish
 ```
 (list "html"
       (list (list "special html launcher"
-		  (list #'(lambda (file)
-			    (message "encountered an HTML file: %s" file)
-			    ;; invoke arbitrary command
-			    (dired-launch-call-process-on "bluefish" "-n" file))))))
+		  #'(lambda (file)
+		      (message "encountered an HTML file: %s" file)
+		      ;; invoke arbitrary command
+		      (dired-launch-call-process-on "bluefish" "-n" file)))))
 ```
 
 Here, the second member of `dired-launch-extensions-map` specifies, for files with the 'txt' extension, Emacs should directly open the application using `find-file`.
