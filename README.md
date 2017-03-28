@@ -82,13 +82,16 @@ This entry specifies, for files with the 'html' extension, calling the 'bluefish
 			    (dired-launch-call-process-on "bluefish" "-n" file))))))
 ```
 
-This entry specifies, for files with the 'txt' extension, Emacs should directly open the application (i.e., the user prefers not to launch an external application on plain-text files).
+Here, the second member of `dired-launch-extensions-map` specifies, for files with the 'txt' extension, Emacs should directly open the application using `find-file`.
 
 ```
-(list "txt"
-      (list (list "emacs"
-		  (list #'(lambda (file)
-			    (find-file file))))))
+(setf dired-launch-extensions-map 
+      (list
+       ;; LibreOffice and Abiword as preferred applications for
+       ;; an OpenDocument text (odt) file
+       '("odt" ("libreofficedev5.3" "abiword"))
+       ;; open text files with Emacs
+       '("txt" (("emacs" find-file)))))
 ```
 
 ### Linux

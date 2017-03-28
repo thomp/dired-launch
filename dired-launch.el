@@ -56,7 +56,7 @@
 		      (save-window-excursion
 			(dired-launch-call-process-on preferred-launch-cmd-spec file)))
 		    (preferred-launch-cmd-spec
-		     (funcall (caadr preferred-launch-cmd-spec) file))
+		     (funcall (cadr preferred-launch-cmd-spec) file))
 		    (t
 		     (save-window-excursion
 		       (let ((args (append (rest dired-launch-default-launcher)
@@ -98,7 +98,7 @@
 ;;;###autoload
 (defun dired-launch-with-prompt-command ()
   "For each marked file in the current dired buffer, prompt user to specify an executable and then call the specified executable using that file."
-  (interactive) 
+  (interactive)
   (if (eq system-type 'windows) 
       (message "Windows not supported")
     (mapc #'(lambda (marked-file)
@@ -122,9 +122,7 @@
       (cond ((stringp (first completions))
 	     selection)
 	    ((consp (first completions))
-	     (let ((executable-constructor (caadr (assoc selection completions))))
-	       (message "executable-constructor %s" executable-constructor)
-	       executable-constructor))
+	     (cadr (assoc selection completions)))
 	    (t
 	     (error "%s" "Can't handle COMPLETIONS"))))))
 
