@@ -41,10 +41,33 @@
 
 (defvar dired-launch-completions-f
   #'(lambda (file)
-      (or (dired-launch--executables-list-using-user-extensions-map file)
-	  (dired-launch--executables-list file)))
-  "This function should return a set of completions (presumably corresponding to executables) either as a list of strings or as an alist. The function should accept a single argument, a string corresponding to the file under consideration.")
+      (let ((internal-completions (dired-launch--executables-list-using-user-extensions-map file)))
+	(if internal-completions
+	    (list internal-completions :user-extensions-map)
+	  (list (dired-launch--executables-list file) :external))))
+  "Specifies a function which should accept a single argument, a string corresponding to the file under consideration. The function should return two values, a set of completions and an indication of the source of the completions (either :user-extensions-map or :external). The first value returned, a set of completions (presumably corresponding to executables), is either a list of strings or an alist.")
 
+(defun dired-launch-ditch-preferred-handler ()
+  "Remove preferred handler for file(s) specified by dired-launch."
+  (interactive)
+  (let ((extensions nil)
+	(files (dired-get-marked-files t current-prefix-arg)))
+    (map nil #'(lambda (file)
+	     (let ((extension (file-name-extension file)))
+	       (unless (member extension extensions)
+		 (push extension extensions)
+		 (dired-launch-extensions-map-pop extension))))
+	 files)))
+
+(defun dired-launch-extensions-map-pop (extension)
+  (pop (second (assoc extension dired-launch-extensions-map))))
+
+(defun dired-launch-extensions-map-add-handler (extension handler)
+  ;; add a member for the extension if such an entry does not exist
+  (if (not (assoc extension dired-launch-extensions-map))
+      (push (list extension (list handler))
+	    dired-launch-extensions-map)
+    (push handler (second (assoc extension dired-launch-extensions-map)))))
 
 (defun dired-launch-homebrew (files launch-cmd)
   (mapc #'(lambda (file)
@@ -114,17 +137,26 @@
 
 (defun dired-launch-get-exec--completions (file)
   "Prompt user to select a completion. Return the corresponding value (either the completion value itself or, if completions are specified as an alist, the value corresponding to the alist key."
-  (let ((completions (funcall dired-launch-completions-f file)))
-    (let ((selection (minibuffer-with-setup-hook 'minibuffer-complete
-		       (completing-read (concat "Executable to use: ")
-					completions))))
-      ;; COMPLETIONS is either a list of strings or an alist
-      (cond ((stringp (first completions))
-	     selection)
-	    ((consp (first completions))
-	     (cadr (assoc selection completions)))
-	    (t
-	     (error "%s" "Can't handle COMPLETIONS"))))))
+  (let ((completions-and-source (funcall dired-launch-completions-f file)))
+    (let ((completions (first completions-and-source)))
+     (let ((selection (minibuffer-with-setup-hook 'minibuffer-complete
+			(completing-read (concat "Executable to use: ")
+					 completions))))
+       ;; if internal preferred handler isn't defined, offer to "remember" (short-term memory... no session persistence) selection 
+       (if (not (eq (second completions-and-source) :user-extensions-map))
+	   ;; ultimately, desirable to offer persistence and not just short-term memory
+	   (let ((extension (file-name-extension file)))
+	     (let ((rememberp (y-or-n-p (format "Use %s as preferred handler for %s files?" selection extension))))
+	       (if rememberp
+		   (if extension
+		       (dired-launch-extensions-map-add-handler extension selection))))))
+       ;; COMPLETIONS is either a list of strings or an alist
+       (cond ((stringp (first completions))
+	      selection)
+	     ((consp (first completions))
+	      (cadr (assoc selection completions)))
+	     (t
+	      (error "%s" "Can't handle COMPLETIONS")))))))
 
 ;; purloined from lisp/shell.el's 'shell--command-completion-data'
 (defun dired-launch--executables-list (&optional file)
