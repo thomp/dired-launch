@@ -74,7 +74,7 @@
 	    (let ((buffer-name "dired-launch-output-buffer")
 		  (preferred-launch-cmd-spec
 		   (let ((completions (dired-launch--executables-list-using-user-extensions-map file)))
-		     (first completions))))
+		     (car completions))))
 	      (cond ((stringp preferred-launch-cmd-spec)
 		      (save-window-excursion
 			(dired-launch-call-process-on preferred-launch-cmd-spec file)))
@@ -112,7 +112,7 @@
 	((eq system-type 'gnu/linux)
 	 (dired-launch-homebrew
 	  (dired-get-marked-files t current-prefix-arg)
-	  (first dired-launch-default-launcher)))
+	  (car dired-launch-default-launcher)))
 	((eq system-type 'windows-nt) (dired-map-over-marks
 				       (w32-shell-execute "open" (dired-get-filename) nil 1) 
 				       nil))
@@ -138,7 +138,7 @@
 (defun dired-launch-get-exec--completions (file)
   "Prompt user to select a completion. Return the corresponding value (either the completion value itself or, if completions are specified as an alist, the value corresponding to the alist key."
   (let ((completions-and-source (funcall dired-launch-completions-f file)))
-    (let ((completions (first completions-and-source)))
+    (let ((completions (car completions-and-source)))
      (let ((selection (minibuffer-with-setup-hook 'minibuffer-complete
 			(completing-read (concat "Executable to use: ")
 					 completions))))
@@ -151,7 +151,7 @@
 		   (if extension
 		       (dired-launch-extensions-map-add-handler extension selection))))))
        ;; COMPLETIONS is either a list of strings or an alist
-       (cond ((stringp (first completions))
+       (cond ((stringp (car completions))
 	      selection)
 	     ((consp (first completions))
 	      (cadr (assoc selection completions)))
