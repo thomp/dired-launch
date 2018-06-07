@@ -215,5 +215,9 @@
   (interactive)
   (add-hook 'dired-mode-hook 'dired-launch-mode))
 
+;; either inactivate dired-launch completely or deal with keybindings
+;; likely to interfere with use of wdired
+(add-hook 'wdired-mode-hook #'(lambda () (dired-launch-mode -1)))
+
 (provide 'dired-launch)
 ;;; dired-launch.el ends here
