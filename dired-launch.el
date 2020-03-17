@@ -19,8 +19,19 @@
 ;;; Code:
 
 (defvar dired-launch-default-launcher
-  '("mimeopen" "-n")
-  "Define the program used as the default launcher. The second member of the list defines a command-line flag which will be used when invoking the program.")
+  nil
+  "Define the program used as the default launcher. The first member of the list is an executable program. The second member of the list defines a command-line flag used when invoking the program.")
+
+;; Default to a reasonable value
+(unless dired-launch-default-launcher
+  (setf dired-launch-default-launcher
+	(cond ((eq system-type 'darwin)
+	       '("open"))
+	      ((eq system-type 'gnu/linux)
+               '("mimeopen" "-n"))
+	      ((eq system-type 'windows-nt)
+	       nil)
+	      (t (error "%s is not supported" system-type)))))
 
 (defvar dired-launch-extensions-map
   (list '("odt" ("libreofficedev5.3" "abiword"))
@@ -69,23 +80,24 @@
 	    dired-launch-extensions-map)
     (push handler (second (assoc extension dired-launch-extensions-map)))))
 
-(defun dired-launch-homebrew (files launch-cmd)
+(defun dired-launch-homebrew (files)
   (mapc #'(lambda (file)
 	    (let ((buffer-name "dired-launch-output-buffer")
 		  (preferred-launch-cmd-spec
 		   (let ((completions (dired-launch--executables-list-using-user-extensions-map file)))
 		     (car completions))))
 	      (cond ((stringp preferred-launch-cmd-spec)
-		      (save-window-excursion
-			(dired-launch-call-process-on preferred-launch-cmd-spec file)))
+		     (save-window-excursion
+		       (dired-launch-call-process-on preferred-launch-cmd-spec file)))
 		    (preferred-launch-cmd-spec
 		     (funcall (cadr preferred-launch-cmd-spec) file))
+		    ;; Use the default launcher
 		    (t
 		     (save-window-excursion
 		       (let ((args (append (rest dired-launch-default-launcher)
 					   (list file))))
 			 (apply #'dired-launch-call-process-on
-				launch-cmd
+				(first dired-launch-default-launcher)
 				args)))))))
 	files))
 
@@ -107,12 +119,10 @@
   (interactive) 
   (cond ((eq system-type 'darwin)
 	 (dired-launch-homebrew
-	  (dired-get-marked-files t current-prefix-arg)
-	  "open"))
+	  (dired-get-marked-files t current-prefix-arg)))
 	((eq system-type 'gnu/linux)
 	 (dired-launch-homebrew
-	  (dired-get-marked-files t current-prefix-arg)
-	  (car dired-launch-default-launcher)))
+	  (dired-get-marked-files t current-prefix-arg)))
 	((eq system-type 'windows-nt) (dired-map-over-marks
 				       (w32-shell-execute "open" (dired-get-filename) nil 1) 
 				       nil))
