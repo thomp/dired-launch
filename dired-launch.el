@@ -1,6 +1,6 @@
 ;;; dired-launch.el --- Use dired as a launcher
 
-;; Copyright (C) 2016 David Thompson
+;; Copyright (C) 2016-2019 David Thompson
 ;; Author: David Thompson
 ;; Version: 0.2
 ;; Keywords: dired, launch
