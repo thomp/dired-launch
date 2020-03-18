@@ -34,20 +34,21 @@
 	      (t (error "%s is not supported" system-type)))))
 
 (defvar dired-launch-extensions-map
-  (list '("odt" ("libreofficedev5.3" "abiword"))
-	'("JPG" ("phototonic" "gimp"))
-	'("png" ("phototonic"))
-	(list "html"
-	      (list (list "special html launcher"
-			  (list #'(lambda (file)
-				    (message "encountered an HTML file: %s" file)
-				    ;; invoke arbitrary command
-				    (dired-launch-call-process-on "bluefish" "-n" file))))
-		    (list "travel back in time" "xedit")))
-	(list "txt"
-	      (list (list "emacs"
-			  (list #'(lambda (file)
-				    (find-file file)))))))
+  (list
+   '("odt" ("libreoffice"))
+   '("JPG" ("phototonic" "gimp"))
+   '("png" ("phototonic"))
+   (list "html"
+	 (list (list "special html launcher"
+		     (list #'(lambda (file)
+			       (message "encountered an HTML file: %s" file)
+			       ;; invoke arbitrary command
+			       (dired-launch-call-process-on "bluefish" "-n" file))))
+	       (list "travel back in time" "xedit")))
+   (list "txt"
+	 (list (list "emacs"
+		     (list #'(lambda (file)
+			       (find-file file)))))))
   "Defines preferred executable(s) for specified file extensions via an alist. Extensions are matched in a case-sensitive manner. The second member of each alist member is a list where each member is either a string corresponding to an executable or a list where the first member is a descriptive string and the second member is either a string or a funcallable object which accepts a single argument, a string corresponding to the file, and returns a string (which, presumably, represents an executable or something to invoke).")
 
 (defvar dired-launch-completions-f
