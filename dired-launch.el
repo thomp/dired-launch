@@ -72,7 +72,7 @@
 	 files)))
 
 (defun dired-launch-establish-executable (file)
-  "Establish the executable program to use for launch with the file specified by FILE. Return a cons where either the car is a string or a list. If the car is a string, (a) the car specifies that executable and (b) the cdr is a list specifying the arguments to be used when invoking the executable."
+  "Establish the executable program to use for launch with the file specified by FILE. Return a cons where either the car is a string or a list. If the car is a string, (a) the car specifies that executable and (b) the cdr is a list specifying the arguments to be used when invoking the executable. Return NIL if unable to establish the executable."
   (let ((args (list file))
 	(preferred-launch-cmd-spec
 	 (car (dired-launch--executables-list-using-user-extensions-map file))))
@@ -90,12 +90,13 @@
 	     (cond ((executable-find launch-cmd) ; sanity check
 		    (cons launch-cmd args))
 		   (t
-		    (message "%s broken -- could not find %s"
+		    (format "%s is broken: could not find executable %s for file %s"
 			     (cond ((stringp preferred-launch-cmd-spec)
 				    "dired-launch-extensions-map")
 				   (t
 				    "dired-launch-default-launcher"))
-			     launch-cmd)
+			     launch-cmd
+			     file)
 		    nil)))
 	    (t
 	     (cons launch-cmd args))))))
