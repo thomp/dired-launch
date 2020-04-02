@@ -114,35 +114,29 @@
 (defun dired-launch-homebrew (files)
   (mapc #'(lambda (file)
 	    (let ((buffer-name "dired-launch-output-buffer")
-		  (preferred-launch-cmd-spec
-		   (let ((completions (dired-launch--executables-list-using-user-extensions-map file)))
-		     (car completions))))
-	      (cond ((stringp preferred-launch-cmd-spec)
+		  (executable-spec (dired-launch-establish-executable file)))
+	      (cond ((stringp executable-spec)
+		     (message executable-spec))
+		    ((stringp (first executable-spec))
 		     (save-window-excursion
-		       (dired-launch-call-process-on preferred-launch-cmd-spec file)))
-		    (preferred-launch-cmd-spec
-		     (funcall (cadr preferred-launch-cmd-spec) file))
-		    ;; Use the default launcher
-		    (t
-		     (save-window-excursion
-		       (let ((args (append (rest dired-launch-default-launcher)
-					   (list file))))
-			 (apply #'dired-launch-call-process-on
-				(first dired-launch-default-launcher)
-				args)))))))
+		       (apply #'dired-launch-call-process-on
+			      (first executable-spec)
+			      (rest executable-spec))))
+		    ((consp (first executable-spec))
+		     (funcall (caar executable-spec)
+			      file))
+		    )))
 	files))
 
 (defun dired-launch-call-process-on (launch-cmd &rest args)
-  (if (executable-find launch-cmd)
-      ;; handle file names with spaces
-      (apply #'call-process
-	     (append (list launch-cmd
-			   nil		; infile
-			   0		; async-ish...
-			   nil		; display
-			   )
-		     args))
-    (message "Could not find %s. Is %s installed? Check the value of dired-launch-default-launcher." launch-cmd launch-cmd)))
+  ;; handle file names with spaces
+  (apply #'call-process
+	 (append (list launch-cmd
+		       nil		; infile
+		       0		; async-ish...
+		       nil		; display
+		       )
+		 args)))
 
 ;;;###autoload
 (defun dired-launch-command ()
