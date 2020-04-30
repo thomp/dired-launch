@@ -212,9 +212,6 @@
       (setq path-dirs (cdr path-dirs)))
     completions))
 
-(defun dired-launch--executables-list-using-mailcap (file)
-  (mailcap-file-default-commands (list file)))
-
 (defun dired-launch--executables-list-using-user-extensions-map (file)
   (let* ((extension (file-name-extension file nil))
 	 (match (assoc extension dired-launch-extensions-map)))
