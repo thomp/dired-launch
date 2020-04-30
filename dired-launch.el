@@ -158,9 +158,6 @@
 		  (funcall launch-cmd-spec marked-file))))
 	  (dired-get-marked-files t current-prefix-arg))))
 
-(defun dired-launch-get-exec--simple ()
-  (read-from-minibuffer (concat "Launch " file " with? ")))
-
 (defun dired-launch-get-exec--completions (file)
   "Prompt user to select a completion. Return the corresponding value (either the completion value itself or, if completions are specified as an alist, the value corresponding to the alist key."
   (let ((completions-and-source (funcall dired-launch-completions-f file)))
