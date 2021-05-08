@@ -92,6 +92,10 @@
 	    (t
 	     (cons launch-cmd args))))))
 
+(defun dired-launch-extensions-map-get (extension)
+  "Return the map entry corresponding to the specified extension."
+  (cdr (assoc extension dired-launch-extensions-map)))
+
 (defun dired-launch-extensions-map-pop (extension)
   (pop (second (assoc extension dired-launch-extensions-map))))
 
