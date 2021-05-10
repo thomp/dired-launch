@@ -217,7 +217,8 @@
     completions))
 
 (defun dired-launch--executables-list-using-user-extensions-map (file)
-  (let* ((extension (string-trim (file-name-extension file nil)))
+  (let* ((extension (string-trim (or (file-name-extension file nil)
+				     "")))
 	 (match (assoc extension dired-launch-extensions-map)))
     (cadr match)))
 
