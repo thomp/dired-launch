@@ -78,9 +78,9 @@
 		  (cadr preferred-launch-cmd-spec))
 		 ;; Use the default launcher
 		 (t
-		  (setf args (append (rest dired-launch-default-launcher)
+		  (setf args (append (cdr dired-launch-default-launcher)
 				     args))
-		  (first dired-launch-default-launcher)))))
+		  (car dired-launch-default-launcher)))))
       (cond ((stringp launch-cmd)
 	     (cond ((executable-find launch-cmd) ; sanity check
 		    (cons launch-cmd args))
@@ -116,12 +116,12 @@
 		  (executable-spec (dired-launch-establish-executable file)))
 	      (cond ((stringp executable-spec)
 		     (message executable-spec))
-		    ((stringp (first executable-spec))
+		    ((stringp (car executable-spec))
 		     (save-window-excursion
 		       (apply #'dired-launch-call-process-on
-			      (first executable-spec)
-			      (rest executable-spec))))
-		    ((consp (first executable-spec))
+			      (car executable-spec)
+			      (cdr executable-spec))))
+		    ((consp (car executable-spec))
 		     (funcall (caar executable-spec)
 			      file))
 		    )))
@@ -187,7 +187,7 @@
        ;; COMPLETIONS is either a list of strings or an alist
        (cond ((stringp (car completions))
 	      selection)
-	     ((consp (first completions))
+	     ((consp (car completions))
 	      (cadr (assoc selection completions)))
 	     (t
 	      (error "%s" "Can't handle COMPLETIONS")))))))
