@@ -31,6 +31,8 @@
 	       (if (executable-find "mimeopen")
 		   '("mimeopen" "-n")
 		 '("xdg-open")))
+	      ((eq system-type 'cygwin)
+	       '("cygstart"))
 	      ((eq system-type 'windows-nt)
 	       nil)
 	      (t (error "%s is not supported" system-type)))))
@@ -145,6 +147,9 @@
 	((eq system-type 'gnu/linux)
 	 (dired-launch-homebrew
 	  (dired-get-marked-files t current-prefix-arg)))
+        ((eq system-type 'cygwin)
+         (dired-launch-homebrew
+          (dired-get-marked-files t current-prefix-arg)))
 	((eq system-type 'windows-nt) (dired-map-over-marks
 				       (w32-shell-execute "open" (dired-get-filename) nil 1) 
 				       nil))
