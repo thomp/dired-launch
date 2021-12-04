@@ -27,7 +27,7 @@
   (setf dired-launch-default-launcher
 	(cond ((eq system-type 'darwin)
 	       '("open"))
-	      ((eq system-type 'gnu/linux)
+	      ((or (eq system-type 'gnu/linux) (eq system-type 'berkeley-unix))
 	       (if (executable-find "mimeopen")
 		   '("mimeopen" "-n")
 		 '("xdg-open")))
@@ -144,7 +144,7 @@
   (cond ((eq system-type 'darwin)
 	 (dired-launch-homebrew
 	  (dired-get-marked-files t current-prefix-arg)))
-	((eq system-type 'gnu/linux)
+	((or (eq system-type 'gnu/linux) (eq system-type 'berkeley-unix))
 	 (dired-launch-homebrew
 	  (dired-get-marked-files t current-prefix-arg)))
         ((eq system-type 'cygwin)
