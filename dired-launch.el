@@ -27,7 +27,8 @@
   (setf dired-launch-default-launcher
 	(cond ((eq system-type 'darwin)
 	       '("open"))
-	      ((or (eq system-type 'gnu/linux) (eq system-type 'berkeley-unix))
+	      ((member system-type '(berkeley-unix
+				     gnu/linux))
 	       (if (executable-find "mimeopen")
 		   '("mimeopen" "-n")
 		 '("xdg-open")))
