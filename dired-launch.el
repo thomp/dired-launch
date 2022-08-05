@@ -5,6 +5,7 @@
 ;; Version: 0.2
 ;; Keywords: dired, launch
 ;; URL: https://github.com/thomp/dired-launch
+;; Package-Requires: ((emacs "24.3"))
 
 ;;; Commentary:
 
@@ -17,6 +18,8 @@
 ;; you.
 
 ;;; Code:
+
+(require 'cl-lib)
 
 (defvar dired-launch-default-launcher
   nil
@@ -60,7 +63,7 @@
   (interactive)
   (let ((extensions nil)
 	(files (dired-get-marked-files t current-prefix-arg)))
-    (map nil #'(lambda (file)
+    (cl-map nil #'(lambda (file)
 	     (let ((extension (file-name-extension file)))
 	       (unless (member extension extensions)
 		 (push extension extensions)
@@ -102,14 +105,14 @@
   (cdr (assoc extension dired-launch-extensions-map)))
 
 (defun dired-launch-extensions-map-pop (extension)
-  (pop (second (assoc extension dired-launch-extensions-map))))
+  (pop (cl-second (assoc extension dired-launch-extensions-map))))
 
 (defun dired-launch-extensions-map-add-handler (extension handler)
   ;; add a member for the extension if such an entry does not exist
   (if (not (assoc extension dired-launch-extensions-map))
       (push (list extension (list handler))
 	    dired-launch-extensions-map)
-    (push handler (second (assoc extension dired-launch-extensions-map)))))
+    (push handler (cl-second (assoc extension dired-launch-extensions-map)))))
 
 (defun dired-launch-homebrew (files)
   (mapc #'(lambda (file)
@@ -178,7 +181,7 @@
 			(completing-read (concat "Executable to use: ")
 					 completions))))
        ;; if internal preferred handler isn't defined, offer to "remember" (short-term memory... no session persistence) selection 
-       (if (not (eq (second completions-and-source) :user-extensions-map))
+       (if (not (eq (cl-second completions-and-source) :user-extensions-map))
 	   ;; ultimately, desirable to offer persistence and not just short-term memory
 	   (let ((extension (file-name-extension file)))
 	     (let ((rememberp (y-or-n-p (format "Use %s as preferred handler for %s files?" selection extension))))
