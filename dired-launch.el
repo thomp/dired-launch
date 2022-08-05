@@ -98,15 +98,15 @@
 	     (cons launch-cmd args))))))
 
 (defun dired-launch-extensions-map-get (extension)
-  "Return the map entry corresponding to the specified extension."
-  (cdr (assoc extension dired-launch-extensions-map)))
+  "Return the complete map entry corresponding to the specified extension."
+  (assoc extension dired-launch-extensions-map))
 
 (defun dired-launch-extensions-map-pop (extension)
   (pop (second (assoc extension dired-launch-extensions-map))))
 
 (defun dired-launch-extensions-map-add-handler (extension handler)
   ;; add a member for the extension if such an entry does not exist
-  (if (not (assoc extension dired-launch-extensions-map))
+  (if (not (dired-launch-extensions-map-get extension))
       (push (list extension (list handler))
 	    dired-launch-extensions-map)
     (push handler (second (assoc extension dired-launch-extensions-map)))))
@@ -227,7 +227,7 @@
 (defun dired-launch--executables-list-using-user-extensions-map (file)
   (let* ((extension (string-trim (or (file-name-extension file nil)
 				     "")))
-	 (match (assoc extension dired-launch-extensions-map)))
+	 (match (dired-launch-extensions-map-get extension)))
     (cadr match)))
 
 
