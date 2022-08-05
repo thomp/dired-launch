@@ -177,9 +177,8 @@
   "Prompt user to select a completion. Return the corresponding value (either the completion value itself or, if completions are specified as an alist, the value corresponding to the alist key."
   (let ((completions-and-source (funcall dired-launch-completions-f file)))
     (let ((completions (car completions-and-source)))
-     (let ((selection (minibuffer-with-setup-hook 'minibuffer-complete
-			(completing-read (concat "Executable to use: ")
-					 completions))))
+     (let ((selection (completing-read (concat "Executable to use: ")
+				       completions)))
        ;; if internal preferred handler isn't defined, offer to "remember" (short-term memory... no session persistence) selection 
        (if (not (eq (cl-second completions-and-source) :user-extensions-map))
 	   ;; ultimately, desirable to offer persistence and not just short-term memory
