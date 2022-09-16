@@ -89,13 +89,16 @@
 	     (cond ((executable-find launch-cmd) ; sanity check
 		    (cons launch-cmd args))
 		   (t
-		    (format "%s is broken: could not find executable %s for file %s"
-			     (cond ((stringp preferred-launch-cmd-spec)
-				    "dired-launch-extensions-map")
-				   (t
-				    "dired-launch-default-launcher"))
-			     launch-cmd
-			     file)
+		    ;; The specified executable appears to be missing
+		    (let ((message
+			   (format "%s is broken: could not find executable %s for file %s"
+				   (cond ((stringp preferred-launch-cmd-spec)
+					  "dired-launch-extensions-map")
+					 (t
+					  "dired-launch-default-launcher"))
+				   launch-cmd
+				   file)))
+		      (display-warning 'dired-launch message))
 		    nil)))
 	    (t
 	     (cons launch-cmd args))))))
