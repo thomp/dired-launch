@@ -23,7 +23,9 @@
 
 (defvar dired-launch-default-launcher
   nil
-  "Define the program used as the default launcher. The first member of the list is an executable program. The second member of the list defines a command-line flag used when invoking the program.")
+  "Define the program used as the default launcher. The first member
+  of the list is an executable program. The second member of the list
+  defines a command-line flag used when invoking the program.")
 
 ;; Default to a reasonable value
 (unless dired-launch-default-launcher
@@ -48,7 +50,14 @@
     ("png" ("phototonic"))
     ("html" ("firefox"))
     )
-  "Defines preferred executable(s) for specified file extensions via an alist. Extensions are matched in a case-sensitive manner. The second member of each alist member is a list where each member is either a string corresponding to an executable or a list where the first member is a descriptive string and the second member is either a string or a funcallable object which accepts a single argument, a string corresponding to the file, and returns a string (which, presumably, represents an executable or something to invoke).")
+  "Defines preferred executable(s) for specified file extensions via
+  an alist. Extensions are matched in a case-sensitive manner. The
+  second member of each alist member is a list where each member is
+  either a string corresponding to an executable or a list where the
+  first member is a descriptive string and the second member is either
+  a string or a funcallable object which accepts a single argument, a
+  string corresponding to the file, and returns a string (which,
+  presumably, represents an executable or something to invoke).")
 
 (defvar dired-launch-completions-f
   #'(lambda (file)
@@ -56,7 +65,13 @@
 	(if internal-completions
 	    (list internal-completions :user-extensions-map)
 	  (list (dired-launch--executables-list file) :external))))
-  "Specifies a function which should accept a single argument, a string corresponding to the file under consideration. The function should return two values, a set of completions and an indication of the source of the completions (either :user-extensions-map or :external). The first value returned, a set of completions (presumably corresponding to executables), is either a list of strings or an alist.")
+  "Specifies a function which should accept a single argument, a
+  string corresponding to the file under consideration. The function
+  should return two values, a set of completions and an indication of
+  the source of the completions (either :user-extensions-map or
+  :external). The first value returned, a set of completions
+  (presumably corresponding to executables), is either a list of
+  strings or an alist.")
 
 (defun dired-launch-ditch-preferred-handler ()
   "Remove preferred handler for file(s) specified by dired-launch."
@@ -71,7 +86,12 @@
 	 files)))
 
 (defun dired-launch-establish-executable (file)
-  "Establish the executable program to use for launch with the file specified by FILE. Return a cons where either the car is a string or a list. If the car is a string, (a) the car specifies that executable and (b) the cdr is a list specifying the arguments to be used when invoking the executable. Return NIL if unable to establish the executable."
+  "Establish the executable program to use for launch with the file
+specified by FILE. Return a cons where either the car is a string or a
+list. If the car is a string, (a) the car specifies that executable
+and (b) the cdr is a list specifying the arguments to be used when
+invoking the executable. Return NIL if unable to establish the
+executable."
   (let ((args (list file))
 	(preferred-launch-cmd-spec
 	 (car (dired-launch--executables-list-using-user-extensions-map file))))
@@ -146,7 +166,8 @@
 
 ;;;###autoload
 (defun dired-launch-command ()
-  "Attempt to launch appropriate executables on marked files in the current dired buffer."
+  "Attempt to launch appropriate executables on marked files in the
+current dired buffer."
   (interactive) 
   (cond ((eq system-type 'darwin)
 	 (dired-launch-homebrew
@@ -164,7 +185,9 @@
 
 ;;;###autoload
 (defun dired-launch-with-prompt-command ()
-  "For each marked file in the current dired buffer, prompt user to specify an executable and then call the specified executable using that file."
+  "For each marked file in the current dired buffer, prompt user to
+specify an executable and then call the specified executable using
+that file."
   (interactive)
   (if (eq system-type 'windows) 
       (message "Windows not supported")
@@ -177,7 +200,9 @@
 	  (dired-get-marked-files t current-prefix-arg))))
 
 (defun dired-launch-get-exec--completions (file)
-  "Prompt user to select a completion. Return the corresponding value (either the completion value itself or, if completions are specified as an alist, the value corresponding to the alist key."
+  "Prompt user to select a completion. Return the corresponding value
+(either the completion value itself or, if completions are specified
+as an alist, the value corresponding to the alist key."
   (let ((completions-and-source (funcall dired-launch-completions-f file)))
     (let ((completions (car completions-and-source)))
      (let ((selection (completing-read (concat "Executable to use: ")
