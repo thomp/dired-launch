@@ -1,6 +1,5 @@
-;;; dired-launch.el --- Use dired as a launcher
+;;; dired-launch.el --- Use dired as a launcher  -*- lexical-binding:t; coding:utf-8 -*-
 
-;; Copyright (C) 2016-2022 David Thompson
 ;; Author: David Thompson
 ;; Version: 0.2
 ;; Keywords: dired, launch
