@@ -231,7 +231,10 @@ as an alist, the value corresponding to the alist key."
 	 (and comint-completion-fignore
 	      (mapconcat (function (lambda (x) (concat (regexp-quote x) "\\'")))
 			 comint-completion-fignore "\\|")))
-	(completions ()))
+	(completions ())
+        (abs-file-name nil)
+        (comps-in-dir nil)
+        (dir nil)
     ;; Go thru each dir in the search path, finding completions.
     (while path-dirs
       (setq dir (file-name-as-directory (comint-directory (or (car path-dirs) ".")))
