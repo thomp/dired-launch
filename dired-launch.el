@@ -234,7 +234,7 @@ as an alist, the value corresponding to the alist key."
 	(completions ())
         (abs-file-name nil)
         (comps-in-dir nil)
-        (dir nil)
+        (dir nil))
     ;; Go thru each dir in the search path, finding completions.
     (while path-dirs
       (setq dir (file-name-as-directory (comint-directory (or (car path-dirs) ".")))
