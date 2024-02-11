@@ -2,7 +2,7 @@
 
 # dired-launch
 
-<2024-02-11> Archived & moved to codeberg.org.
+<2024-02-11> Archived & moved to codeberg.org. https://codeberg.org/thomp/dired-launch
 
 *Launch an external application from dired*
 
