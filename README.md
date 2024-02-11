@@ -2,6 +2,8 @@
 
 # dired-launch
 
+<2024-02-11> Archived & moved to codeberg.org.
+
 *Launch an external application from dired*
 
 ---
